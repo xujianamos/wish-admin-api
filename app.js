@@ -3,9 +3,12 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+//引入token验证中间件
+const verifyMiddleware=require('./routes/middleware/verify')
+//导入路由文件
+const indexRouter = require('./routes/index');
+const wishRouter = require('./routes/wish');
+const adminRouter = require('./routes/admin');
 
 var app = express();
 
@@ -18,9 +21,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+//挂载路由文件
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+//配置许愿管理模块路由path，添加token验证中间件
+app.use('/wish', verifyMiddleware.verifyToken,wishRouter);
+//配置管理员管理模块路由path，添加token验证中间件
+app.use('/admin',verifyMiddleware.verifyToken, adminRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
