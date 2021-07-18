@@ -54,6 +54,7 @@ function list(req,res) {
                     let obj={
                         id:v.id,
                         username:v.username,
+                        name:v.name,
                         role:v.role,
                         lastLoginAt: dateFormat(v.lastLoginAt,'yyyy-mm-dd HH:MM:ss'),
                         createAt: dateFormat(v.createAt,'yyyy-mm-dd HH:MM:ss')
