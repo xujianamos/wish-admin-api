@@ -161,9 +161,91 @@ function add(req,res) {
 }
 //修改许愿
 function update(req,res) {
-    
+    const {id,content,name}=req.body
+    //定义一个返回对象
+    const resObj=Common.clone(Constant.DEFAULT_SUCCESS)
+    //定义一个async任务
+    let tasks={
+        //校验参数方法
+        checkParams:cb=>{
+            //调用公共方法校验参数，如果成功，则继续后续操作
+            //如果失败，则传递错误信息到async的最终方法
+            Common.checkParams(req.body,['id','name','content'],cb)
+        },
+        //查询方法，依赖校验参数方法
+        update:['checkParams',(results,cb)=>{
+            //使用wish的model中的方法更新
+            WishModel.update({
+                name:name,
+                content:content
+            },{
+                where:{
+                    id:id
+                }
+            }).then(function (result){
+                // 更新结果处理
+                if(result[0]){
+                    //更新成功
+                    cb(null)
+
+                }else {
+                   // 如果更新失败，传递错误信息到async的最终方法中
+                   cb(Constant.WISH_NOT_EXSIT)
+                }
+                // 继续后续操作
+            }).catch(err=>{
+                //错误处理
+                //打印错误日志
+                console.log(err)
+                //传递错误信息到async的最终方法中
+                cb(Constant.DEFAULT_ERROR)
+            })
+        }]
+    };
+    //执行公共方法中的autoFn方法返回数据
+    Common.autoFn(tasks,res,resObj)
 }
 //删除许愿
-function remove(req,res                                            ) {
+function remove(req,res) {
+    const {id}=req.body
+    //定义一个返回对象
+    const resObj=Common.clone(Constant.DEFAULT_SUCCESS)
+    //定义一个async任务
+    let tasks={
+        //校验参数方法
+        checkParams:cb=>{
+            //调用公共方法校验参数，如果成功，则继续后续操作
+            //如果失败，则传递错误信息到async的最终方法
+            Common.checkParams(req.body,['id'],cb)
+        },
+        //删除方法，依赖校验参数方法
+        update:['checkParams',(results,cb)=>{
+            //使用wish的model中的方法更新
+            WishModel.destroy({
+                where:{
+                    id:id
+                }
+            }).then(function (result){
+                // 删除结果处理
+                if(result){
+                    //删除成功
+                    cb(null)
+
+                }else {
+                    // 如果删除失败，传递错误信息到async的最终方法中
+                    cb(Constant.WISH_NOT_EXSIT)
+                }
+                // 继续后续操作
+            }).catch(err=>{
+                //错误处理
+                //打印错误日志
+                console.log(err)
+                //传递错误信息到async的最终方法中
+                cb(Constant.DEFAULT_ERROR)
+            })
+        }]
+    };
+    //执行公共方法中的autoFn方法返回数据
+    Common.autoFn(tasks,res,resObj)
     
 }
